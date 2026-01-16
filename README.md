@@ -68,39 +68,21 @@ dwim: intent unclear
 
 The goal is to eventually need dwim less, not more.
 
-## v0.1 Sketch
+## Getting Started
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-DWIM_LOG="${DWIM_LOG:-$HOME/.local/share/dwim/usage.log}"
-mkdir -p "$(dirname "$DWIM_LOG")"
-
-# Log the attempt
-echo "$(date -Iseconds) [$$] $(pwd) $*" >> "$DWIM_LOG"
-
-# Check for native implementation first
-if [[ -x "$HOME/.config/dwim/commands/$1" ]]; then
-  exec "$HOME/.config/dwim/commands/$1" "${@:2}"
-fi
-
-if [[ -x "./.dwim/commands/$1" ]]; then
-  exec "./.dwim/commands/$1" "${@:2}"
-fi
-
-# Fall back to LLM interpretation
-claude -p "You are dwim (Do What I Mean), a CLI intent interpreter.
-
-The user invoked: dwim $*
-Working directory: $(pwd)
-
-If the intent is clear, execute it and return the result.
-If the intent is ambiguous, write clarifying questions to a temp file and return instructions for 'dwim retry'.
-If you can infer a reusable pattern, note it for potential native implementation.
-
-Be concise. Execute, don't explain."
+./bin/dwim install   # symlinks to ~/.local/bin/dwim
+dwim something       # interpret and execute
 ```
+
+## v0.1
+
+The implementation lives at `./bin/dwim`. It:
+
+1. Handles `dwim install` (symlink to `~/.local/bin/dwim`)
+2. Logs all invocations to `~/.local/share/dwim/usage.log`
+3. Checks for native implementations in `~/.config/dwim/commands/` (user) and `./.dwim/commands/` (project)
+4. Falls back to Claude CLI for LLM interpretation
 
 ## Usage Patterns to Watch For
 
